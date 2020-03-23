@@ -30,25 +30,12 @@ class Controller:
         else:
             return "Error. Invalid motor index."
         
-controller =  Controller('COM3', 9600)
+ctrl =  Controller('/dev/ttyS0', 9600)
+f = open("data.csv", "a")
+        msg += datum + ','
+msg += datetime.now().strftime("%m/%d/%Y,%H:%M:%S") 
+msg += "\n"
+print(msg)
+f.write(msg)
+f.close()
 
-print(controller.get_humidity())
-print(controller.get_motor_states())
-
-print(controller.toggle_motor(0))
-print(controller.toggle_motor(1))
-print(controller.toggle_motor(2))
-print(controller.toggle_motor(3))
-
-print(controller.get_motor_states())
-
-print(controller.toggle_motor(0))
-print(controller.toggle_motor(1))
-print(controller.toggle_motor(2))
-print(controller.toggle_motor(3))
-
-print(controller.get_motor_states())
-
-
-
-    
