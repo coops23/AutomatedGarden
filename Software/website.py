@@ -45,6 +45,17 @@ def data_log():
     templateData = template(text = msg)
     return render_template('main.html', **templateData)
 
+@app.route("/motor_status")
+def motor_status():
+   msg = ""
+   data = ctrl.get_motor_states()
+   data = data.decode('ascii')
+   data = data.strip('\n')
+   msg = data
+
+   templateData = template(text = msg)
+   return render_template('main.html', **templateData)
+
 if __name__ == "__main__":
     app.run(host='192.168.0.173', port=5000, debug=True)
     # app.run()
