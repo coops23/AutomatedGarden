@@ -3,7 +3,7 @@ from datetime import datetime
 
 if __name__ == "__main__":            
     ctrl =  Controller.Controller('/dev/ttyS0', 9600)
-    f = open("data.csv", "a")
+    f = open("/home/pi/Desktop/AutomatedGarden/Software/data.csv", "a")
 
     data = ctrl.get_humidity()
     data = data.decode('ascii')
