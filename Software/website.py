@@ -37,6 +37,14 @@ def humidity():
     templateData = template(text = msg)
     return render_template('main.html', **templateData)
 
+@app.route("/data_log")
+def data_log():
+    msg = ""
+    with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
+        msg += f.read()
+    templateData = template(text = msg)
+    return render_template('main.html', **templateData)
+
 if __name__ == "__main__":
     app.run(host='192.168.0.173', port=5000, debug=True)
     # app.run()
