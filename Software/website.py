@@ -52,17 +52,21 @@ def data_log():
     templateData = template(text = msg, plot = response)
     return render_template('main.html', **templateData)
 
-def plot_png(data):
-    fig = create_figure(data)
-    output = io.BytesIO()
-    FigureCanvas(fig).print_png(output)
-    return Response(output.getvalue(), mimetype='image/png')
-    
-def create_figure(data):
+@app.route('/plot.png')
+def plot():
     fig = Figure()
-    [x, y] = parse_data(data)
-    axis.plot(x, y)
-    return fig
+    axis = fig.add_subplot(1, 1, 1)
+    msg = ""
+    with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
+        msg += f.read(data)
+    [xs, ys] = parse_data(msg)
+    axis.plot(xs, ys)
+    canvas = FigureCanvas(fig)
+    output = io.BytesIO()
+    canvas.print_png(output)
+    response = make_response(output.getvalue())
+    response.mimetype = 'image/png'
+    return response
     
 @app.route("/motor_status")
 def motor_status():
