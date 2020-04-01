@@ -48,7 +48,7 @@ def data_log():
     msg = ""
     with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
         msg += f.read(data)
-    response = plot_png()
+    response = plot_png(msg)
     templateData = template(text = msg, plot = response)
     return render_template('main.html', **templateData)
 
