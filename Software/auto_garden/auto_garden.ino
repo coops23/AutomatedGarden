@@ -1,3 +1,4 @@
+
 #define MOISTURE_SENSOR_ZERO_PIN    (0)
 #define MOISTURE_SENSOR_ONE_PIN     (1)
 #define MOISTURE_SENSOR_TWO_PIN     (2)
@@ -63,6 +64,11 @@ void setup()
 
 void loop() 
 { 
+    while (USBSERIAL.available()) {
+      char inChar = (char)USBSERIAL.read();
+      USBSERIAL.print(inChar);
+    }
+    
     while (HWSERIAL.available()) {
       // get the new byte:
       char inChar = (char)HWSERIAL.read();
