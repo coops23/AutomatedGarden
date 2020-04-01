@@ -58,6 +58,7 @@ def plot():
     with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
         msg += f.read()
     [xs, ys] = parse_data(msg)
+    axis.ylim((400,1000))
     axis.plot(xs, ys)
     canvas = FigureCanvas(fig)
     output = io.BytesIO()
