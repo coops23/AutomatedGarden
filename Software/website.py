@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, Response
 from graphing import parse_data
 import psutil
 import datetime
@@ -10,13 +10,14 @@ from matplotlib.figure import Figure
 app = Flask(__name__)
 ctrl = Controller.Controller('/dev/ttyS0', 9600)
 
-def template(title = "Farmatron", text = ""):
+def template(title = "Farmatron", text = "", plot = None):
     now = datetime.datetime.now()
     timeString = now
     templateDate = {
         'title' : title,
         'time' : timeString,
-        'text' : text
+        'text' : text,
+        'plot' : plot
         }
     return templateDate
 
@@ -37,7 +38,7 @@ def humidity():
         datum = str(int(data[i]))
         msg += datum + ' '
 
-    templateData = template(text = msg)
+    templateData = template(text = msg, plot = None)
     return render_template('main.html', **templateData)
 
 @app.route("/data_log")
@@ -45,16 +46,16 @@ def data_log():
     msg = ""
     with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
         msg += f.read()
-    templateData = template(text = msg)
+    response = plot_png()
+    templateData = template(text = msg, plot = response)
     return render_template('main.html', **templateData)
 
-@app.route("/plot.png")
 def plot_png():
     fig = create_figure()
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')
-
+    
 def create_figure():
     fig = Figure()
     axis = fig.add_subplot(1, 1, 1)
