@@ -6,6 +6,8 @@ import os
 import Controller
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+import io
+import random
 
 app = Flask(__name__)
 ctrl = Controller.Controller('/dev/ttyS0', 9600)
@@ -45,23 +47,21 @@ def humidity():
 def data_log():
     msg = ""
     with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
-        msg += f.read()
+        msg += f.read(data)
     response = plot_png()
     templateData = template(text = msg, plot = response)
     return render_template('main.html', **templateData)
 
-def plot_png():
-    fig = create_figure()
+def plot_png(data):
+    fig = create_figure(data)
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')
     
-def create_figure():
+def create_figure(data):
     fig = Figure()
-    axis = fig.add_subplot(1, 1, 1)
-    xs = range(100)
-    ys = [random.randint(1, 50) for x in xs]
-    axis.plot(xs, ys)
+    [x, y] = parse_data(data)
+    axis.plot(x, y)
     return fig
     
 @app.route("/motor_status")
