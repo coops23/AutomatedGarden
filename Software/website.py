@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, Response
+from flask import Flask, render_template, redirect, url_for, Response, make_response
 from graphing import parse_data
 import psutil
 import datetime
@@ -18,8 +18,7 @@ def template(title = "Farmatron", text = "", plot = None):
     templateDate = {
         'title' : title,
         'time' : timeString,
-        'text' : text,
-        'plot' : plot
+        'text' : text
         }
     return templateDate
 
@@ -47,9 +46,8 @@ def humidity():
 def data_log():
     msg = ""
     with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
-        msg += f.read(data)
-    response = plot_png(msg)
-    templateData = template(text = msg, plot = response)
+        msg += f.read()
+    templateData = template(text = msg)
     return render_template('main.html', **templateData)
 
 @app.route('/plot.png')
@@ -58,7 +56,7 @@ def plot():
     axis = fig.add_subplot(1, 1, 1)
     msg = ""
     with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
-        msg += f.read(data)
+        msg += f.read()
     [xs, ys] = parse_data(msg)
     axis.plot(xs, ys)
     canvas = FigureCanvas(fig)
