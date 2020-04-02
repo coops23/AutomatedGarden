@@ -1,26 +1,32 @@
-# importing the required module 
 import matplotlib.pyplot as plt 
+import sys
 from datetime import datetime
 
-def parse_data(raw_data):
-    x = []
-    y = []
-        
-    for raw_data_entry in raw_data.splitlines():
-        data = raw_data_entry.split(",")
-        humid_one = data[0]
-        humid_two = data[1]   
-        humid_three = data[2]
-        humid_four = data[3]
+def parse_line(entry):
+    processed_data = None
+    data = entry.split(",")
+
+    try:
         data[4] = data[4] + " " + data[5]
         data[4] = data[4].strip(" ")
         data[4] = data[4].strip("\n")
         data[4] = data[4].strip("\r")
         date = datetime.strptime(data[4], '%m/%d/%Y %H:%M:%S')
-        
-        y.append(humid_one)
-        x.append(date)
-        
+        data[4] = date
+        processed_data = [data[0], data[1], data[2], data[3], date]
+    except:
+        msg = "Error with " + str(data) + "caused " + str(sys.exc_info()[0])
+        print(msg)
+    
+    return processed_data
+
+def parse_data(raw_data):
+    x = []
+    y = []
+    for raw_data_entry in raw_data:
+        data = parse_line(raw_data_entry)
+        y.append(data[0])
+        x.append(data[4])
     return [x, y]
 
 if __name__ == "__main__":

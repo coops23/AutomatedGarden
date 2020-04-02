@@ -1,11 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, Response, make_response
-from graphing import parse_data
+from graphing import parse_data, parse_line
 import psutil
 import datetime
 import os
 import Controller
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 import io
 import random
 
@@ -52,21 +53,62 @@ def data_log():
 
 @app.route('/plot.png')
 def plot():
-    fig = Figure()
-    axis = fig.add_subplot(1, 1, 1)
+    fig = plt.figure()
+
+    section_one_plot = fig.add_subplot(2, 2, 1, title = "Section 1 Moisture")
+    section_two_plot = fig.add_subplot(2, 2, 2, title = "Section 2 Moisture")
+    section_three_plot = fig.add_subplot(2, 2, 3, title = "Section 3 Moisture")
+    section_four_plot = fig.add_subplot(2, 2, 4, title = "Section 4 Moisture")
+
     msg = ""
     with open('/home/pi/Desktop/AutomatedGarden/Software/data.csv', 'r') as f:
         msg += f.read()
-    [xs, ys] = parse_data(msg)
-    axis.set_ylim([400,1000])
-    axis.plot(xs, ys)
+
+    x = []
+    y0 = []
+    y1 = []
+    y2 = []
+    y3 = []
+    oldest_date = None
+    latest_date = None
+    for line in msg.splitlines():
+        info = parse_line(line)
+        if oldest_date is None:
+           oldest_date = info[4]
+        latest_date = info[4]
+        y0.append(int(info[0]))
+        y1.append(int(info[1]))
+        y2.append(int(info[2]))
+        y3.append(int(info[3]))
+        x.append(latest_date)
+
+    print(y0)
+    print(y1)
+
+    section_one_plot.set_xlim([oldest_date, latest_date])
+    section_one_plot.set_ylim([0, 1024])
+    section_one_plot.plot(x[:], y0)
+
+    section_two_plot.set_xlim([oldest_date, latest_date])
+    section_two_plot.set_ylim([0, 1024])
+    section_two_plot.plot(x[:], y1)
+
+    section_three_plot.set_xlim([oldest_date, latest_date])
+    section_three_plot.set_ylim([0, 1024])
+    section_three_plot.plot(x[:], y2)
+
+    section_four_plot.set_xlim([oldest_date, latest_date])
+    section_four_plot.set_ylim([0, 1024])
+    section_four_plot.plot(x[:], y3)
+
     canvas = FigureCanvas(fig)
     output = io.BytesIO()
     canvas.print_png(output)
     response = make_response(output.getvalue())
     response.mimetype = 'image/png'
+
     return response
-    
+
 @app.route("/motor_status")
 def motor_status():
    msg = ""
