@@ -1,73 +1,53 @@
+#include <Servo.h>
 
 #define MOISTURE_SENSOR_ZERO_PIN    (0)
 #define MOISTURE_SENSOR_ONE_PIN     (1)
 #define MOISTURE_SENSOR_TWO_PIN     (2)
 #define MOISTURE_SENSOR_THREE_PIN   (3)
-#define PUMP_ZERO_PIN               (4)
-#define PUMP_ONE_PIN                (5)
-#define PUMP_TWO_PIN                (6)
-#define PUMP_THREE_PIN              (7)
 
-#define MOISTURE_DIGITAL_VALUE_MAX  (614) //((1023UL / 500UL) * 300UL) 
-#define MOISTURE_DIGITAL_VALUE_MIN  (256) // ((1023UL / 500UL) * 120UL) 
+#define SERVO_PIN                   (6)
+#define EN_PIN                      (7)
+
+#define VALVE_OPEN_VALUE            (145)
+#define VALVE_CLOSE_VALUE           (45)
 
 #define HUMIDITY_SENSOR_COUNT       (4)
 
 #define GET_HUMIDITY_DATA           (1)
-#define GET_MOTOR_STATES            (2)
-#define TOGGLE_MOTOR_ZERO           (3)
-#define TOGGLE_MOTOR_ONE            (4)
-#define TOGGLE_MOTOR_TWO            (5)
-#define TOGGLE_MOTOR_THREE          (6)
-#define STOP_MOTORS                 (7)
-#define INVALID_CMD                 (8)
+#define VALVE_OPEN                  (2)
+#define VALVE_CLOSE                 (3)
+#define EN_HIGH                     (4)
+#define EN_LOW                      (5)
+#define INVALID_CMD                 (6)
 
 #define HWSERIAL Serial1
-#define USBSERIAL Serial
+//#define USBSERIAL Serial1
+
+Servo valve_servo;
 
 static String inputString = "";         // a string to hold incoming data
 static boolean stringComplete = false;  // whether the string is complete
-static bool motor_on[4] = {false, false, false, false};
-const int motor_pins[4] = {PUMP_ZERO_PIN, PUMP_ONE_PIN, PUMP_TWO_PIN, PUMP_THREE_PIN};
-
-void startMotor(int motor)
-{
-    int pin = motor_pins[motor];
-    
-    motor_on[motor] = false;
-    digitalWrite(pin, LOW);
-}
-
-void stopMotors()
-{
-    for (int i = 0 ; i < 4; i++)
-    {
-        motor_on[i] = true;
-        digitalWrite(motor_pins[i], HIGH);
-    }
-}
 
 void setup() 
 {
-    pinMode(PUMP_ZERO_PIN, OUTPUT); 
-    pinMode(PUMP_ONE_PIN, OUTPUT);
-    pinMode(PUMP_TWO_PIN, OUTPUT);
-    pinMode(PUMP_THREE_PIN, OUTPUT);     
+    pinMode(EN_PIN, OUTPUT); 
+    valve_servo.attach(SERVO_PIN);  
     
     HWSERIAL.begin(9600);
-    USBSERIAL.begin(9600);
+    //USBSERIAL.begin(9600);
     
     inputString.reserve(200);
     
-    stopMotors();
+    digitalWrite(EN_PIN, LOW);
+    valve_servo.write(VALVE_CLOSE_VALUE);
 }
 
 void loop() 
 { 
-    while (USBSERIAL.available()) {
+    /*while (USBSERIAL.available()) {
       char inChar = (char)USBSERIAL.read();
       USBSERIAL.print(inChar);
-    }
+    }*/
     
     while (HWSERIAL.available()) {
       // get the new byte:
@@ -110,34 +90,25 @@ void loop()
 
                 HWSERIAL.print(humidity[0]); HWSERIAL.print(" "); HWSERIAL.print(humidity[1]); HWSERIAL.print(" "); HWSERIAL.print(humidity[2]); HWSERIAL.print(" "); HWSERIAL.println(humidity[3]);
             }
-            else if (cmd == GET_MOTOR_STATES)
+            else if (cmd == VALVE_OPEN)
             {
-                HWSERIAL.print(motor_on[0]); HWSERIAL.print(" "); HWSERIAL.print(motor_on[1]); HWSERIAL.print(" "); HWSERIAL.print(motor_on[2]); HWSERIAL.print(" "); HWSERIAL.println(motor_on[3]);
+                valve_servo.write(VALVE_OPEN_VALUE);
+                HWSERIAL.println("opening");
             }
-            else if (cmd == TOGGLE_MOTOR_ZERO)
+            else if (cmd == VALVE_CLOSE)
             {
-                startMotor(0);
-                HWSERIAL.println(motor_on[0]);
+                valve_servo.write(VALVE_CLOSE_VALUE);
+                HWSERIAL.println("closing");
             }
-            else if (cmd == TOGGLE_MOTOR_ONE)
+            else if (cmd == EN_HIGH)
             {
-                startMotor(1);
-                HWSERIAL.println(motor_on[1]);
+                digitalWrite(EN_PIN, HIGH);
+                HWSERIAL.println("Enabled");
             }
-            else if (cmd == TOGGLE_MOTOR_TWO)
+            else if (cmd == EN_LOW)
             {
-                startMotor(2);
-                HWSERIAL.println(motor_on[2]);
-            }
-            else if (cmd == TOGGLE_MOTOR_THREE)
-            {
-                startMotor(3);
-                HWSERIAL.println(motor_on[3]);
-            }
-            else if (cmd == STOP_MOTORS)
-            {        
-                stopMotors();
-                HWSERIAL.print(motor_on[0]); HWSERIAL.print(" "); HWSERIAL.print(motor_on[1]); HWSERIAL.print(" "); HWSERIAL.print(motor_on[2]); HWSERIAL.print(" "); HWSERIAL.println(motor_on[3]);
+                digitalWrite(EN_PIN, LOW);
+                HWSERIAL.println("Disabled");
             }
         }
         
