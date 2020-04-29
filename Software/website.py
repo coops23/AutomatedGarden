@@ -82,23 +82,29 @@ def plot():
         y3.append(int(info[3]))
         x.append(latest_date)
 
-    print(y0)
-    print(y1)
+    # hack to plot for one day
+    oldest_date = latest_date.replace(hour = 0, minute = 0, second = 0)
+    latest_date = latest_date.replace(hour = 23, minute = 59, second = 59)
 
-    section_one_plot.set_xlim([oldest_date, latest_date])
-    section_one_plot.set_ylim([0, 1024])
+
+    #section_one_plot.set_xlim([oldest_date, latest_date])
+    section_one_plot.set_ylim([550, 900])
+    section_one_plot.set_xticklabels(section_one_plot.get_xticklabels(), rotation=90)
     section_one_plot.plot(x[:], y0)
 
-    section_two_plot.set_xlim([oldest_date, latest_date])
-    section_two_plot.set_ylim([0, 1024])
+    #section_two_plot.set_xlim([oldest_date, latest_date])
+    section_two_plot.set_ylim([550, 900])
+    section_two_plot.set_xticklabels(section_two_plot.get_xticklabels(), rotation=90)
     section_two_plot.plot(x[:], y1)
 
-    section_three_plot.set_xlim([oldest_date, latest_date])
-    section_three_plot.set_ylim([0, 1024])
+    #section_three_plot.set_xlim([oldest_date, latest_date])
+    section_three_plot.set_ylim([550, 900])
+    section_three_plot.set_xticklabels(section_three_plot.get_xticklabels(), rotation=90)
     section_three_plot.plot(x[:], y2)
 
-    section_four_plot.set_xlim([oldest_date, latest_date])
-    section_four_plot.set_ylim([0, 1024])
+    #section_four_plot.set_xlim([oldest_date, latest_date])
+    section_four_plot.set_ylim([550, 900])
+    section_four_plot.set_xticklabels(section_four_plot.get_xticklabels(), rotation=90)
     section_four_plot.plot(x[:], y3)
 
     canvas = FigureCanvas(fig)
@@ -109,15 +115,14 @@ def plot():
 
     return response
 
-@app.route("/motor_status")
-def motor_status():
-   msg = ""
-   data = ctrl.get_motor_states()
-   data = data.decode('ascii')
-   data = data.strip('\n')
-   msg = data
+@app.route("/open_valve")
+def open_valve():
+   templateData = template(text = str(ctrl.open_valve(1)), plot = None)
+   return render_template('main.html', **templateData)
 
-   templateData = template(text = msg)
+@app.route("/close_valve")
+def close_valve():
+   templateData = template(text = str(ctrl.close_valve(1)),  plot = None)
    return render_template('main.html', **templateData)
 
 if __name__ == "__main__":
