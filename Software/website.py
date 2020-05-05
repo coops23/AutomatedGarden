@@ -9,6 +9,7 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import io
 import random
+import time
 
 app = Flask(__name__)
 ctrl = Controller.Controller('/dev/ttyS0', 9600)
@@ -123,6 +124,15 @@ def open_valve():
 @app.route("/close_valve")
 def close_valve():
    templateData = template(text = str(ctrl.close_valve(2)),  plot = None)
+   return render_template('main.html', **templateData)
+
+@app.route("/water_plants")
+def water_plants():
+   ctrl.open_valve(2)
+   time.sleep(5)
+   ctrl.close_valve(2)
+
+   templateData = template(text = "plants watered",  plot = None)
    return render_template('main.html', **templateData)
 
 if __name__ == "__main__":
