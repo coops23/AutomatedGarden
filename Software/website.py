@@ -117,12 +117,12 @@ def plot():
 
 @app.route("/open_valve")
 def open_valve():
-   templateData = template(text = str(ctrl.open_valve(1)), plot = None)
+   templateData = template(text = str(ctrl.open_valve(2)), plot = None)
    return render_template('main.html', **templateData)
 
 @app.route("/close_valve")
 def close_valve():
-   templateData = template(text = str(ctrl.close_valve(1)),  plot = None)
+   templateData = template(text = str(ctrl.close_valve(2)),  plot = None)
    return render_template('main.html', **templateData)
 
 if __name__ == "__main__":

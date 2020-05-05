@@ -8,8 +8,8 @@
 #define SERVO_PIN                   (6)
 #define EN_PIN                      (7)
 
-#define VALVE_OPEN_VALUE            (2)
-#define VALVE_CLOSE_VALUE           (92)
+#define VALVE_OPEN_VALUE            (0)
+#define VALVE_CLOSE_VALUE           (120)
 
 #define HUMIDITY_SENSOR_COUNT       (4)
 
