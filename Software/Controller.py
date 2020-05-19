@@ -8,7 +8,8 @@ class Controller:
         self.ser.close()
 
     def _read(self):
-        return self.ser.readline()
+        msg = self.ser.readline()
+        return msg
 
     def _write(self, msg):
         msg += "\n"
@@ -16,7 +17,12 @@ class Controller:
 
     def get_humidity(self):
         self._write("1")
-        return self._read()
+        data = self._read()
+        data = data.decode()
+        data = data.strip('\r\n')
+        data = data.split(' ')
+
+        return int(data[0])
 
     def open_valve(self, delay):
         msg = ""
