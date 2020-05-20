@@ -1,4 +1,4 @@
-@reboot sudo python3 <repo>/AutomatedGarden/Software/website.py
-*/1 * * * * sudo python3 <repo>/AutomatedGarden/Software/sample.py
-30 9 * * * sudo python3 <repo>/AutomatedGarden/Software/water_plants.$
+@reboot sudo python3 /home/pi/Desktop/AutomatedGarden/Software/website.py
+*/10 * * * * sudo python3 /home/pi/Desktop/AutomatedGarden/Software/sample.py
+35 9 * * * sudo python3 /home/pi/Desktop/AutomatedGarden/Software/water_plants.py
 

@@ -16,5 +16,5 @@ if __name__ == "__main__":
     avg = int(avg / 10)
 
     f = open("/home/pi/Desktop/AutomatedGarden/Software/data.csv", "a")
-    f.write(date_time + "," + str(avg) + "\n")
+    f.write(date_time + "," + str(avg) + "," + "False" + "\n")
     f.close()
