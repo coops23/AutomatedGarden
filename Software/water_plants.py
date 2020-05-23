@@ -3,8 +3,8 @@ import datetime
 import time
 
 SAMPLE_COUNT = 50
-WATERING_TIME_SECS = 30
-
+WATERING_TIME_SECS = 20
+MOISTURE_THRESHOLD = 720
 
 if __name__ == "__main__":            
     ctrl =  Controller.Controller('/dev/ttyS0', 9600)
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     now = datetime.datetime.now()
     date_time = now.strftime("%m/%d/%Y %H:%M:%S")
     watered = "False"
-    if moisture >= 700:
+    if moisture >= MOISTURE_THRESHOLD:
         ctrl.open_valve(2)
         time.sleep(WATERING_TIME_SECS)
         ctrl.close_valve(2)
