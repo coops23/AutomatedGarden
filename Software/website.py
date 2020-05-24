@@ -67,14 +67,17 @@ def plot():
         y.append(int(info[1]))
         x.append(latest_date)
 
-    # hack to plot for one day
-    oldest_date = latest_date.replace(hour = 0, minute = 0, second = 0)
-    latest_date = latest_date.replace(hour = 23, minute = 59, second = 59)
-
-    #moisture_plot.set_xlim([oldest_date, latest_date])
-    moisture_plot.set_ylim([550, 900])
-    moisture_plot.set_xticklabels(moisture_plot.get_xticklabels(), rotation=90)
-    moisture_plot.plot(x[:], y)
+    # convert to 24 hour so we can plot one day clearly
+    today = datetime.date.today()
+    time = []
+    moisture = []
+    for i in range(0, len(x)):
+        if x[i].date() == today:
+            time.append((x[i].hour * 100) + x[i].minute)
+            moisture.append(y[i])
+    moisture_plot.set_xlim([0, 2400])
+    #moisture_plot.set_xticklabels(moisture_plot.get_xticklabels(), rotation=0)
+    moisture_plot.plot(time, moisture)
 
     canvas = FigureCanvas(fig)
     output = io.BytesIO()
